@@ -21,6 +21,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Agent.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Constants.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enemy.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Homework1.py" />
     <Compile Include="Player.py">
       <SubType>Code</SubType>

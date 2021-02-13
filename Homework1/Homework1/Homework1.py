@@ -1,20 +1,17 @@
 import pygame
 
 from Player import Player
+from Enemy import Enemy
 from Vector import Vector
+from Constants import Constants
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT))
 done = False
 
-position = Vector(30,30)
-velocity = Vector(30,30)
-size = Vector(60,60)
-color = (255, 0 ,0)
+player = Player(Constants.POSITION,Constants.SPEED, Constants.SIZE, Constants.COLOR)
+enemy = Enemy(Constants.ENEMY_POSITION,Constants.ENEMY_SPEED, Constants.SIZE, Constants.ENEMY_COLOR)
 
-player = Player(position,velocity,size)
-
-myFont = pygame.font.SysFont("Times New Roman", 18)
 clock = pygame.time.Clock()
 
 while not done:
@@ -22,41 +19,13 @@ while not done:
 		if event.type == pygame.QUIT:
 			done = True
 
-	player.update()
+	#cant inherit on player without these parameters???
+	player.update(player, Constants.ENEMY_RANGE)
+	enemy.update(player, Constants.ENEMY_RANGE)
 	
-	screen.fill((100, 149, 237))
-	player.draw(screen, color)
-
-	pygame.display.flip()
-	clock.tick(60)
-import pygame
-
-from Player import Player
-from Vector import Vector
-
-pygame.init()
-screen = pygame.display.set_mode((800, 600))
-done = False
-
-position = Vector(30,30)
-velocity = Vector(5,5)
-size = Vector(60,60)
-color = (255, 0 ,0)
-print(position.VecY)
-player = Player(position,velocity,size)
-
-myFont = pygame.font.SysFont("Times New Roman", 18)
-clock = pygame.time.Clock()
-
-while not done:
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			done = True
-
-	player.update()
-	
-	screen.fill((100, 149, 237))
-	player.draw(screen, color)
+	screen.fill((Constants.BACKGROUND_COLOR))
+	player.draw(screen)
+	enemy.draw(screen)
 
 	pygame.display.flip()
 	clock.tick(60)
