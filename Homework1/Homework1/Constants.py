@@ -25,7 +25,7 @@ class Constants:
     ENEMYHUNTER_RANGE = 100
 
     clock = pygame.time.Clock()
-    MAXTIME = 2.0 * clock.tick(60)
+    MAXTIME = 4.0 * clock.tick(60)
 
 
     
