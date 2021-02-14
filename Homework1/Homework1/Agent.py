@@ -1,6 +1,7 @@
 import pygame
 
 from Vector import Vector
+from Constants import Constants
 
 class Agent:
 
@@ -28,5 +29,15 @@ class Agent:
 		self.vel.VecY = 0
 
 		self.center = self.pos + Vector((self.siz * 0.5)-1, (self.siz * 0.5)-1)
+		
+		if self.pos.VecX < 0:
+			self.pos.VecX = 0
+		if self.pos.VecX > Constants.WORLD_WIDTH - Constants.SIZE:
+			self.pos.VecX = Constants.WORLD_WIDTH - Constants.SIZE
+		if self.pos.VecY < 0:
+			self.pos.VecY = 0
+		if self.pos.VecY > Constants.WORLD_HEIGHT - Constants.SIZE:
+			self.pos.VecY = Constants.WORLD_HEIGHT - Constants.SIZE
+
 		self.rectangle = pygame.Rect(self.pos.VecX, self.pos.VecY, self.siz, self.siz)
 

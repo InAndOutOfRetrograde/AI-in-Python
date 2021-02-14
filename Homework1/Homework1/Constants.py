@@ -1,6 +1,9 @@
+import pygame
+
 from Vector import Vector
 
 class Constants:
+
     FRAME_RATE = 60
     WORLD_WIDTH = 800
     WORLD_HEIGHT = 600
@@ -15,6 +18,14 @@ class Constants:
     ENEMY_COLOR = (255,0,0)
     ENEMY_SPEED = 5
     ENEMY_RANGE = 100
+
+    ENEMYHUNTER_POSITION = Vector(500, 500)
+    ENEMYHUNTER_COLOR = (255,0,255)
+    ENEMYHUNTER_SPEED = 5
+    ENEMYHUNTER_RANGE = 100
+
+    clock = pygame.time.Clock()
+    MAXTIME = 2.0 * clock.tick(60)
 
 
     
