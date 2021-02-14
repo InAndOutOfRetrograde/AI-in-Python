@@ -10,6 +10,7 @@ class EnemyHunter(Enemy):
 		super().__init__(position, speed, size, color, max_time)
 		self.timeToPlayer = 0.0
 		self.predictedPlayerPos = Vector(0,0)
+		self.idealColor = Constants.ENEMYHUNTER_COLOR
 
 	#drawing
 	def draw(self, screen):
@@ -58,7 +59,7 @@ class EnemyHunter(Enemy):
 		self.vecToPlayer = player.center - self.center
 		if self.vecToPlayer != Vector(0,0):
 			self.distance = self.vecToPlayer.length()
-		if self.distance < Constants.ENEMY_RANGE:
+		if self.distance < Constants.ENEMYHUNTER_RANGE:
 			if self.It == False:
 				self.pursue()
 				self.currLineColor = (0,0,255)
@@ -70,4 +71,4 @@ class EnemyHunter(Enemy):
 	def update(self, player, range):
 		super().update(player, range)
 		self.playerPosPrediction(player)
-		self.movement(player)
+		#self.movement(player)

@@ -11,6 +11,7 @@ class Enemy(Agent):
 		self.clock = pygame.time.Clock()
 		self.vecToPlayer = Vector(0,0)
 		self.currLineColor = (0,0,255)
+		self.idealColor = Constants.ENEMY_COLOR
 		self.It = True;
 		self.collisionTime = True;
 		self.max_time = max_time
@@ -37,9 +38,9 @@ class Enemy(Agent):
 		self.pos -= self.vel.scale(self.spd)
 
 	def colorSwap(self):
-		if self.color == Constants.ENEMY_COLOR:
+		if self.color == self.idealColor:
 			self.color = (255,255,255)
-
+			
 	#movement
 	def movement(self,player):
 		self.vecToPlayer = player.center - self.center
@@ -65,12 +66,13 @@ class Enemy(Agent):
 				self.colorSwap()
 				self.cur_time += 1.0
 			elif self.cur_time > self.max_time:
-				self.color = Constants.ENEMY_COLOR
+				self.color = self.idealColor
 				self.collisionTime = True
 				self.cur_time = 0.0
 
 		#collision and "tag" set up
 		if pygame.Rect.colliderect(player.rectangle, self.rectangle) and self.collisionTime == True:
+			print(self.color)
 			self.collisionTime = False
 			if self.It == False:
 				self.It = True

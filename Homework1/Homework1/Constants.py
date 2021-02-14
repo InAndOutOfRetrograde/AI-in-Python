@@ -21,7 +21,7 @@ class Constants:
 
     ENEMYHUNTER_POSITION = Vector(500, 500)
     ENEMYHUNTER_COLOR = (255,0,255)
-    ENEMYHUNTER_SPEED = 5
+    ENEMYHUNTER_SPEED = 1
     ENEMYHUNTER_RANGE = 100
 
     clock = pygame.time.Clock()
