@@ -38,7 +38,7 @@ class EnemyHunter(Enemy):
 	def playerPosPrediction(self, player):
 		if(self.vecToPlayer != Vector(0,0)):
 			#finding time
-			self.timeToPlayer = self.vecToPlayer.length()/Constants.SPEED
+			self.timeToPlayer = self.vecToPlayer.length()/Constants.PLAYER_MAX_SPEED
 			#finding player pos in that time
 			#self.predictedPlayerPos = (player.vel.scale(Constants.SPEED * self.timeToPlayer))
 			self.futurePosition = player.center + player.vel.scale(self.timeToPlayer)
@@ -47,13 +47,13 @@ class EnemyHunter(Enemy):
 	def pursue(self):
 		self.vel = self.futurePosition - self.center
 		self.vel = self.vel.normalize()
-		self.pos += self.vel.scale(self.spd)
+		self.pos += self.vel.scale(self.maxSpd)
 	
 	#new direction away based on this vector
 	def evade(self):
 		self.vel = self.futurePosition- self.center
 		self.vel = self.vel.normalize()
-		self.pos -= self.vel.scale(self.spd)
+		self.pos -= self.vel.scale(self.maxSpd)
 
 	def movement(self, player):
 		self.vecToPlayer = player.center - self.center

@@ -27,6 +27,9 @@
     <Compile Include="Constants.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Dog.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Enemy.py">
       <SubType>Code</SubType>
     </Compile>
@@ -35,6 +38,9 @@
     </Compile>
     <Compile Include="Homework1.py" />
     <Compile Include="Player.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Sheep.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Vector.py">

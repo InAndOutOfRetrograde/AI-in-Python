@@ -7,7 +7,7 @@ class Vector:
 		self.VecY = y
 
 	def __str__(self):
-		 print ("Vector", Vector.VecX, ", ", Vector.VecY)
+		 return "Vector" + str(self.VecX) + ", " + str(self.VecY)
 
 	def __add__(self, other):
 		return Vector(self.VecX + other.VecX, self.VecY + other.VecY)
@@ -30,3 +30,7 @@ class Vector:
 			self.VecX = self.VecX/mag
 			self.VecY = self.VecY/mag
 		return self
+
+	def lerp(self, strength, target):
+		self = self + target.scale(strength)
+		return self 
