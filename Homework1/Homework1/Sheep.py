@@ -5,7 +5,7 @@ from Vector import Vector
 from Constants import Constants
 
 class Sheep(Enemy):
-    def __init__(self, position, speed, size, color, max_time, surface):
+    def __init__(self, position, speed, angularVel, size, color, max_time, surface):
         super().__init__(position, speed, size, color, max_time, surface)
         self.neighbors = []
 
@@ -20,7 +20,7 @@ class Sheep(Enemy):
     def calculateNeighbors(self, herd):
         self.neighbors = []
         for x in range(len(herd)):
-            if (herd[x].center - self.center).length() < Constants.SHEEP_RANGE:
+            if (herd[x].center - self.center).length() < Constants.SHEEP_NEIGHBOR_RANGE:
                 self.neighbors.append(herd[x])
         print(len(self.neighbors))
         return (self.neighbors) 
@@ -57,16 +57,16 @@ class Sheep(Enemy):
         if Constants.enable_bound_force:
             self.boundPos = Vector(0,0)
             boundVel = Vector(0,0)
-            if(self.center.VecY < Constants.SHEEP_BOUNDARY_DISTANCE):
+            if(self.center.VecY < Constants.SHEEP_BOUNDARY_RANGE):
                 boundVel.VecY += 1
                 self.boundPos = Vector(self.center.VecX, 0.0)
-            if (self.center.VecY > Constants.WORLD_HEIGHT - Constants.SHEEP_BOUNDARY_DISTANCE):
+            if (self.center.VecY > Constants.WORLD_HEIGHT - Constants.SHEEP_BOUNDARY_RANGE):
                 boundVel.VecY -= 1
                 self.boundPos = Vector(self.center.VecX, Constants.WORLD_HEIGHT)
-            if(self.center.VecX < Constants.SHEEP_BOUNDARY_DISTANCE):
+            if(self.center.VecX < Constants.SHEEP_BOUNDARY_RANGE):
                 boundVel.VecX += 1
                 self.boundPos = Vector(0.0, self.center.VecY)
-            if (self.center.VecX > Constants.WORLD_WIDTH - Constants.SHEEP_BOUNDARY_DISTANCE):
+            if (self.center.VecX > Constants.WORLD_WIDTH - Constants.SHEEP_BOUNDARY_RANGE):
                 boundVel.VecX -= 1
                 self.boundPos = Vector(Constants.WORLD_HEIGHT, self.center.VecY)
             self.vel += boundVel.normalize().scale(Constants.SHEEP_BOUNDARY_FORCE)
@@ -74,9 +74,9 @@ class Sheep(Enemy):
         #Dog
         if self.distance < Constants.ENEMY_RANGE and Constants.enable_dog_force == True:
             if self.vecToPlayer.VecX != 0 or self.vecToPlayer.VecY != 0: 
-                self.vel += self.vecToPlayer.normalize().scale(-Constants.DOG_CHASE_FORCE)
+                self.vel += self.vecToPlayer.normalize().scale(-Constants.HERD_DOG_CHASE_FORCE)
 
-    def update(self, player, range, herd):
+    def update(self, player, range, herd, gates):
         self.currVel = Vector(self.vel.VecX, self.vel.VecY)
         self.direction(player)
         self.updateAi(player, self.calculateNeighbors(herd))

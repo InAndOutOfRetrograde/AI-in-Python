@@ -1,6 +1,7 @@
 import pygame
 import random
 
+from Agent import Agent
 from Player import Player
 from Enemy import Enemy
 from Sheep import Sheep
@@ -8,31 +9,90 @@ from Dog import Dog
 from EnemyHunter import EnemyHunter
 
 from Vector import Vector
+from Graph import Graph
+from Node import Node
+
 from Constants import Constants
 
+#################################################################################
+# Helper Functions
+#################################################################################
+
+def buildGates(graph):
+	X = 0
+	Y = 1
+	# Add the gates to the game
+	# pick one end, then pick the second end about 50 spaces away (pick a direction, generate the far end
+	for gate in Constants.GATES:
+		graph.placeObstacle(Vector(gate[0][X], gate[0][Y]), (0, 255, 0))
+		graph.placeObstacle(Vector(gate[1][X], gate[1][Y]), (255, 0, 0))
+		print("Placing Obstacles: " + str(gate[0]) + " " + str(gate[1]))
+
+	# Add the final pen based on the final gate
+	finalGate = gate[-2:]
+	# If the gate is horizontally arranged
+	if finalGate[0][Y] == finalGate[1][Y]:
+		# If the green gate (the first gate) is on the right, paddock goes "up"
+		if finalGate[0][X] > finalGate[1][X]:
+			direction = -1
+		else:
+			direction = 1
+		for y in range(finalGate[0][Y] + direction * 16, finalGate[0][Y] + direction * 112, direction * 16):
+			graph.placeObstacle(Vector(finalGate[0][X], y), (0, 0, 0))
+			graph.placeObstacle(Vector(finalGate[1][X], y), (0, 0, 0))
+		for x in range(finalGate[0][X] + direction * 16, finalGate[1][X], direction * 16):
+			graph.placeObstacle(Vector(x, finalGate[0][Y] + direction * 96), (0, 0, 0))
+	# If the gate is vertically arranged
+	else:
+		# If the green gate (the first gate) is on the bottom, paddock goes "right"
+		if finalGate[0][Y] < finalGate[1][Y]:
+			direction = -1
+		else:
+			direction = 1
+		for x in range(finalGate[0][X] + direction * 16, finalGate[1][X] + direction * 112, direction * 16):
+			graph.placeObstacle(Vector(x, finalGate[0][Y]), (0, 0, 0))
+			graph.placeObstacle(Vector(x, finalGate[1][Y]), (0, 0, 0))
+		for y in range(finalGate[0][Y] - direction *  16, finalGate[1][Y], - direction * 16):
+			graph.placeObstacle(Vector(finalGate[0][X] + direction * 96, y), (0, 0, 0))
+
+def buildObstacles(graph):
+	# Random Obstacles
+	for i in range(Constants.NBR_RANDOM_OBSTACLES):
+		start = Vector(random.randrange(0, Constants.WORLD_WIDTH), random.randrange(0, Constants.WORLD_HEIGHT))
+		graph.placeObstacle(start, (0, 0, 0))
+		for j in range(random.randrange(Constants.NBR_RANDOM_OBSTACLES)):
+			start += Vector((random.randrange(3) - 1) * Constants.GRID_SIZE, (random.randrange(3) - 1) * Constants.GRID_SIZE)
+			while(start.x >= Constants.WORLD_WIDTH - Constants.GRID_SIZE or start.y >= Constants.WORLD_HEIGHT - Constants.GRID_SIZE):
+				start += Vector((random.randrange(3) - 1) * Constants.GRID_SIZE, (random.randrange(3) - 1) * Constants.GRID_SIZE)
+			graph.placeObstacle(start, (0, 0, 0))
+
+#################################################################################
+# Main Functionality
+#################################################################################
 pygame.init()
 screen = pygame.display.set_mode((Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT))
-done = False
+bounds = Vector(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT)
 
-dogSurface = pygame.image.load('collie.png')
-sheepSurface = pygame.image.load('sheep.png')
+dogImage = pygame.image.load('collie.png')
+sheepImage = pygame.image.load('sheep.png')
 
-#player = Player(Constants.POSITION,Constants.PLAYER_SPEED, Constants.SIZE, Constants.COLOR)
-dog = Dog(Constants.POSITION,Constants.PLAYER_MAX_SPEED, Constants.GET_SIZE, Constants.COLOR, dogSurface)
+#Make the Player
+dog = Dog(Constants.POSITION,Constants.PLAYER_MAX_SPEED, Constants.GET_SIZE, Constants.COLOR, dogImage)
 
-#enemy_list = []
+#Make the Sheep
 sheep_list = []
-#enemy_hunter_list = []
-for x in range(Constants.SHEEP_AMOUNT):
-	#enemy = Enemy(Constants.ENEMY_POSITION + Vector(x*30, Constants.ENEMY_POSITION.VecY),Constants.ENEMY_SPEED, Constants.SIZE, Constants.ENEMY_COLOR, Constants.MAXTIME)
-	#enemyHunter = EnemyHunter(Constants.ENEMYHUNTER_POSITION + Vector(x*30, Constants.ENEMYHUNTER_POSITION.VecY), Constants.ENEMYHUNTER_SPEED, Constants.SIZE, Constants.ENEMYHUNTER_COLOR, Constants.MAXTIME)
+sheep = Sheep(Vector(random.randrange(int(bounds.VecX * .4), int(bounds.VecX * .6)),
+					 random.randrange(int(bounds.VecY * .6), int(bounds.VecY * .8))),
+			 Constants.SHEEP_SPEED, Constants.SHEEP_ANGULAR_SPEED, Vector(Constants.DOG_WIDTH, Constants.DOG_HEIGHT), (0, 255, 0), Constants.MAXTIME, sheepImage)
+sheep_list.append(sheep)
+
+'''for x in range(Constants.SHEEP_AMOUNT):
 	sheep = Sheep(Vector(random.uniform(32,Constants.WORLD_WIDTH-32), random.uniform(32, Constants.WORLD_HEIGHT-32)),Constants.SHEEP_MAX_SPEED, Constants.GET_SIZE, Constants.SHEEP_COLOR, Constants.MAXTIME, sheepSurface)
 	sheep_list.append(sheep)
-	#enemy_list.append(enemy)
-	#enemy_hunter_list.append(enemyHunter)
-
+'''
 clock = pygame.time.Clock()
 
+done = False
 while not done:
 	for event in pygame.event.get():
 		if event.type == pygame.KEYDOWN:
@@ -49,24 +109,28 @@ while not done:
 		if event.type == pygame.QUIT:
 			done = True
 		
-
+	# Update agents
 	#cant inherit on player without these parameters???
-	#player.update(player, Constants.ENEMY_RANGE)
 	dog.update(dog, Constants.ENEMY_RANGE)
 
 	for x in range(len(sheep_list)):
-		#enemy_list[x].update(player, Constants.ENEMY_RANGE)
-		sheep_list[x].update(dog, Constants.ENEMY_RANGE, sheep_list)
-		#enemy_hunter_list[x].update(player, Constants.ENEMYHUNTER_RANGE)
+		sheep_list[x].update(dog, Constants.ENEMY_RANGE, sheep_list, Constants.GATES)
 	
+	# Fill Screen
 	screen.fill((Constants.BACKGROUND_COLOR))
-	#player.draw(screen)
+
+	#draw graph/obstacles
+	buildGates()
+	buildObstacles()
+	
+	# Draw agents
 	dog.draw(screen)
 	
 	for x in range(len(sheep_list)):
-		#enemy_list[x].draw(screen)
-		#enemy_hunter_list[x].draw(screen)
 		sheep_list[x].draw(screen, sheep_list)
 
+	# Double Buffer
 	pygame.display.flip()
+
+	# Limit to 60 fps
 	clock.tick(60)
