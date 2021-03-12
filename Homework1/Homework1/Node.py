@@ -18,7 +18,7 @@ class Node(DrawableObject):
 		self.upperLeft = position					# upper left corner of the node rect
 		self.center = position + size.scale(0.5)	# center of the node rect
 		self.size = size							# size of the node
-		self.neighbors = []							# list of neighbors of this node
+		self.neighbors = [] 						# list of neighbors of this node
 		self.x = x									# index into the node list
 		self.y = y									# index into the node list
 		self.reset()
@@ -71,10 +71,10 @@ class Node(DrawableObject):
 			pygame.draw.rect(screen, self.color, rect)
 
 		# Draw the boundary of the node (the grid lines)
-		if Constants.DEBUG_GRID_LINES:
+		if Constants.enable_grid_lines:
 			pygame.draw.rect(screen, (0, 0, 0), rect, Constants.DEBUG_LINE_WIDTH)
 
 		# Draw the edges to each neighbor
-		if Constants.DEBUG_NEIGHBOR_LINES:
+		if Constants.show_neighbors:
 			for node in self.neighbors:
 				pygame.draw.line(screen, (0, 255, 0), (self.center.x, self.center.y), (node.center.x, node.center.y))

@@ -2,7 +2,7 @@ import pygame
 
 from Agent import Agent
 from Vector import Vector
-from Constants import Constants
+import Constants
 
 class Enemy(Agent):
 
@@ -24,11 +24,11 @@ class Enemy(Agent):
 	def lineDraw(self,screen):
 		if self.vel != Vector(0,0) :
 			self.line_length = self.vel.scale(10)
-			pygame.draw.line(screen, self.currLineColor, (self.center.VecX, self.center.VecY), (self.center.VecX - self.line_length.VecX, self.center.VecY - self.line_length.VecY), 4)
+			pygame.draw.line(screen, self.currLineColor, (self.center.x, self.center.y), (self.center.x - self.line_length.x, self.center.y - self.line_length.y), 4)
 
 	def seek(self):
 		self.vel = self.vecToPlayer
-		if self.vel.VecX != 0 or self.vel.VecY != 0: 
+		if self.vel.x != 0 or self.vel.y != 0: 
 			self.vel = self.vel.normalize().scale(self.maxSpd)
 			self.pos += self.vel
 		else:
@@ -36,7 +36,7 @@ class Enemy(Agent):
 
 	def flee(self):
 		self.vel = self.vecToPlayer
-		if self.vel.VecX != 0 or self.vel.VecY != 0: 
+		if self.vel.x != 0 or self.vel.y != 0: 
 			self.vel = self.vel.normalize().scale(self.maxSpd)
 			self.pos -= self.vel
 		else:

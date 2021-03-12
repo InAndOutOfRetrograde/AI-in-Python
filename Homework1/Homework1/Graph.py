@@ -112,7 +112,30 @@ class Graph():
 		print("BREADTH-FIRST")
 		self.reset()
 
-		# TODO: Add your breadth-first code here!
+		#Add the start node to the toVisit queue
+		startNode = self.getNodeFromPoint(start)
+		startNode.isStart = True
+		startNode.backNode = 0
+		endNode = self.getNodeFromPoint(end)
+		endNode.isEnd = True
+		toVisit = []
+		toVisit.append(startNode)
+		startNode.isVisited = True
+
+		while (len(toVisit) > 0):
+			#getting the node to edit
+			currNode = toVisit.pop(0)
+			currNode.isExplored = True
+
+			for nextNode in currNode.neighbors:
+				if nextNode.isVisited == False:
+					nextNode.isVisited = True
+					toVisit.append(nextNode)
+					
+					nextNode.backNode = currNode
+
+					if nextNode == endNode:
+						return self.buildPath(nextNode)
 
 		return []
 
@@ -121,7 +144,51 @@ class Graph():
 		print("DJIKSTRA")
 		self.reset()		
 
-		# TODO: Add your Djikstra code here!
+		#Add the start node to the toVisit queue
+		startNode = self.getNodeFromPoint(start)
+		startNode.isStart = True
+		startNode.backNode = 0
+		startNode.costFromStart = 0
+		startNode.costToEnd = 0
+		startNode.cost = 0
+		endNode = self.getNodeFromPoint(end)
+		endNode.isEnd = True
+		toVisit = []
+		toVisit.append(startNode)
+		startNode.isVisited = True
+
+		while (len(toVisit) > 0):
+			#getting the node to edit
+			currNode = toVisit.pop(0)
+			currNode.isExplored = True
+			if currNode == endNode:
+				return self.buildPath(currNode)
+
+			for nextNode in currNode.neighbors:
+				currDistance = (currNode.center - nextNode.center).length()
+				costFromStart = currDistance + currNode.costFromStart
+				costToEnd = 0
+				cost = costFromStart + costToEnd
+				#if you havent visited this node yet
+				if nextNode.isVisited == False:
+					nextNode.isVisited = True
+					#change the costs(cost is the total)
+					nextNode.costFromStart = costFromStart
+					nextNode.costToEnd = costToEnd
+					nextNode.cost = cost
+
+					toVisit.append(nextNode)
+					toVisit.sort(key=lambda node:node.cost)
+					nextNode.backNode = currNode
+				else:
+					#check if the new path is cheaper than the old path
+					if currDistance + currNode.cost < nextNode.cost:
+						#change the cost
+						nextNode.costFromStart = costFromStart
+						nextNode.costToEnd = costToEnd
+						nextNode.cost = cost
+						toVisit.sort(key=lambda node:node.cost)
+						nextNode.backNode = currNode
 
 		return []
 
@@ -130,8 +197,55 @@ class Graph():
 		print("A_STAR")
 		self.reset()
 
-		# TODO: Add your A-star code here!
+		#Add the start node to the toVisit queue
+		startNode = self.getNodeFromPoint(start)
+		startNode.isStart = True
+		startNode.backNode = 0
+		startNode.costFromStart = 0
+		
+		startNode.cost = 0
+		endNode = self.getNodeFromPoint(end)
+		endNode.isEnd = True
 
+		#guess a distance TO THE END by finding distance between startnode and endnode
+		startNode.costToEnd = (endNode.center - startNode.center).length()
+
+		toVisit = []
+		toVisit.append(startNode)
+		startNode.isVisited = True
+
+		while (len(toVisit) > 0):
+			#getting the node to edit
+			currNode = toVisit.pop(0)
+			currNode.isExplored = True
+			if currNode == endNode:
+				return self.buildPath(currNode)
+
+			for nextNode in currNode.neighbors:
+				currDistance = (currNode.center - nextNode.center).length()
+				costFromStart = currDistance + currNode.costFromStart
+				costToEnd = (nextNode.center - endNode.center).length()
+				cost = costFromStart + costToEnd
+				#if you havent visited this node yet
+				if nextNode.isVisited == False:
+					nextNode.isVisited = True
+					#change the costs(cost is the total)
+					nextNode.costFromStart = costFromStart
+					nextNode.costToEnd = costToEnd
+					nextNode.cost = cost
+
+					toVisit.append(nextNode)
+					toVisit.sort(key=lambda node:node.cost)
+					nextNode.backNode = currNode
+				else:
+					#check if the new path is cheaper than the old path
+					if currDistance + currNode.cost < nextNode.cost:
+						#change the cost
+						nextNode.costFromStart = costFromStart
+						nextNode.costToEnd = costToEnd
+						nextNode.cost = cost
+						toVisit.sort(key=lambda node:node.cost)
+						nextNode.backNode = currNode
 		return []
 
 	def findPath_BestFirst(self, start, end):
@@ -139,7 +253,55 @@ class Graph():
 		print("BEST_FIRST")
 		self.reset()
 
-		# TODO: Add your Best-first code here!
+		#Add the start node to the toVisit queue
+		startNode = self.getNodeFromPoint(start)
+		startNode.isStart = True
+		startNode.backNode = 0
+		startNode.costFromStart = 0
+		
+		startNode.cost = 0
+		endNode = self.getNodeFromPoint(end)
+		endNode.isEnd = True
+
+		#guess a distance by finding distance between startnode and endnode
+		startNode.costToEnd = (startNode.center - endNode.center).length()
+
+		toVisit = []
+		toVisit.append(startNode)
+		startNode.isVisited = True
+
+		while (len(toVisit) > 0):
+			#getting the node to edit
+			currNode = toVisit.pop(0)
+			currNode.isExplored = True
+			if currNode == endNode:
+				return self.buildPath(currNode)
+
+			for nextNode in currNode.neighbors:
+				currDistance = (currNode.center - nextNode.center).length()
+				costFromStart = 0
+				costToEnd = (nextNode.center - endNode.center).length()
+				cost = costFromStart + costToEnd
+				#if you havent visited this node yet
+				if nextNode.isVisited == False:
+					nextNode.isVisited = True
+					#change the costs(cost is the total)
+					nextNode.costFromStart = costFromStart
+					nextNode.costToEnd = costToEnd
+					nextNode.cost = cost
+
+					toVisit.append(nextNode)
+					toVisit.sort(key=lambda node:node.cost)
+					nextNode.backNode = currNode
+				else:
+					#check if the new path is cheaper than the old path
+					if currDistance + currNode.cost < nextNode.cost:
+						#change the cost
+						nextNode.costFromStart = costFromStart
+						nextNode.costToEnd = costToEnd
+						nextNode.cost = cost
+						toVisit.sort(key=lambda node:node.cost)
+						nextNode.backNode = currNode
 
 		return []
 

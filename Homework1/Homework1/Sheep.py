@@ -2,7 +2,7 @@ import pygame
 
 from Enemy import Enemy
 from Vector import Vector
-from Constants import Constants
+import Constants
 
 class Sheep(Enemy):
     def __init__(self, position, speed, angularVel, size, color, max_time, surface):
@@ -10,8 +10,8 @@ class Sheep(Enemy):
         self.neighbors = []
 
     def draw(self, screen, herd):
-        screen.blit(self.rotated_image, [self.center.VecX - self.siz.width * 0.5, self.center.VecY - self.siz.height * 0.5])
-        #pygame.draw.line(screen, (255,0,0), (self.center.VecX, self.center.VecY), (self.center.VecX + (self.cohesVel.VecX * 50), self.center.VecY + (self.cohesVel.VecX * 50)), 3)
+        screen.blit(self.rotated_image, [self.center.x - self.siz.width * 0.5, self.center.y - self.siz.height * 0.5])
+        #pygame.draw.line(screen, (255,0,0), (self.center.x, self.center.y), (self.center.x + (self.cohesVel.x * 50), self.center.y + (self.cohesVel.x * 50)), 3)
         #for sheep in herd:
 
         pygame.draw.rect(screen, (255,0,0), self.rectangle, 2)
@@ -22,7 +22,6 @@ class Sheep(Enemy):
         for x in range(len(herd)):
             if (herd[x].center - self.center).length() < Constants.SHEEP_NEIGHBOR_RANGE:
                 self.neighbors.append(herd[x])
-        print(len(self.neighbors))
         return (self.neighbors) 
 
     def updateAi(self, player, herd):
@@ -32,7 +31,6 @@ class Sheep(Enemy):
             for x in herd:
                 self.alignVel += x.vel
             self.alignVel = self.alignVel.scale(1/len(herd))
-            print("alignVel: " + str(self.alignVel))
             self.vel += self.alignVel.normalize().scale(Constants.HERD_ALIGNMENT_FORCE)
 
         #Cohesion
@@ -57,27 +55,27 @@ class Sheep(Enemy):
         if Constants.enable_bound_force:
             self.boundPos = Vector(0,0)
             boundVel = Vector(0,0)
-            if(self.center.VecY < Constants.SHEEP_BOUNDARY_RANGE):
-                boundVel.VecY += 1
-                self.boundPos = Vector(self.center.VecX, 0.0)
-            if (self.center.VecY > Constants.WORLD_HEIGHT - Constants.SHEEP_BOUNDARY_RANGE):
-                boundVel.VecY -= 1
-                self.boundPos = Vector(self.center.VecX, Constants.WORLD_HEIGHT)
-            if(self.center.VecX < Constants.SHEEP_BOUNDARY_RANGE):
-                boundVel.VecX += 1
-                self.boundPos = Vector(0.0, self.center.VecY)
-            if (self.center.VecX > Constants.WORLD_WIDTH - Constants.SHEEP_BOUNDARY_RANGE):
-                boundVel.VecX -= 1
-                self.boundPos = Vector(Constants.WORLD_HEIGHT, self.center.VecY)
+            if(self.center.y < Constants.SHEEP_BOUNDARY_RANGE):
+                boundVel.y += 1
+                self.boundPos = Vector(self.center.x, 0.0)
+            if (self.center.y > Constants.WORLD_HEIGHT - Constants.SHEEP_BOUNDARY_RANGE):
+                boundVel.y -= 1
+                self.boundPos = Vector(self.center.x, Constants.WORLD_HEIGHT)
+            if(self.center.x < Constants.SHEEP_BOUNDARY_RANGE):
+                boundVel.x += 1
+                self.boundPos = Vector(0.0, self.center.y)
+            if (self.center.x > Constants.WORLD_WIDTH - Constants.SHEEP_BOUNDARY_RANGE):
+                boundVel.x -= 1
+                self.boundPos = Vector(Constants.WORLD_HEIGHT, self.center.y)
             self.vel += boundVel.normalize().scale(Constants.SHEEP_BOUNDARY_FORCE)
             
         #Dog
         if self.distance < Constants.ENEMY_RANGE and Constants.enable_dog_force == True:
-            if self.vecToPlayer.VecX != 0 or self.vecToPlayer.VecY != 0: 
+            if self.vecToPlayer.x != 0 or self.vecToPlayer.y != 0: 
                 self.vel += self.vecToPlayer.normalize().scale(-Constants.HERD_DOG_CHASE_FORCE)
 
     def update(self, player, range, herd, gates):
-        self.currVel = Vector(self.vel.VecX, self.vel.VecY)
+        self.currVel = Vector(self.vel.x, self.vel.y)
         self.direction(player)
         self.updateAi(player, self.calculateNeighbors(herd))
         super().update(player, range)

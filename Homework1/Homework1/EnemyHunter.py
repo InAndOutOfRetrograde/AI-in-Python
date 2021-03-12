@@ -2,7 +2,7 @@ import pygame
 
 from Enemy import Enemy
 from Vector import Vector
-from Constants import Constants
+import Constants
 
 class EnemyHunter(Enemy):
 
@@ -15,7 +15,7 @@ class EnemyHunter(Enemy):
 	#drawing
 	def draw(self, screen):
 		super().draw(screen)
-		#pygame.draw.line(screen, (0,0,255), (self.center.VecX, self.center.VecY), (self.futurePosition.VecX, self.futurePosition.VecY), 4)
+		#pygame.draw.line(screen, (0,0,255), (self.center.x, self.center.y), (self.futurePosition.x, self.futurePosition.y), 4)
 		
 	def lineDraw(self,screen):
 		super().lineDraw(screen)

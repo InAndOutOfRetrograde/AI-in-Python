@@ -12,7 +12,7 @@ from Vector import Vector
 from Graph import Graph
 from Node import Node
 
-from Constants import Constants
+import Constants
 
 #################################################################################
 # Helper Functions
@@ -73,16 +73,26 @@ pygame.init()
 screen = pygame.display.set_mode((Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT))
 bounds = Vector(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT)
 
+#int to make pathfinding slower.
+patienceCounter = 0
+
 dogImage = pygame.image.load('collie.png')
 sheepImage = pygame.image.load('sheep.png')
+
+#Make the Graph
+graph = Graph()
+
+#draw graph/obstacles
+buildGates(graph)
+buildObstacles(graph)
 
 #Make the Player
 dog = Dog(Constants.POSITION,Constants.PLAYER_MAX_SPEED, Constants.GET_SIZE, Constants.COLOR, dogImage)
 
 #Make the Sheep
 sheep_list = []
-sheep = Sheep(Vector(random.randrange(int(bounds.VecX * .4), int(bounds.VecX * .6)),
-					 random.randrange(int(bounds.VecY * .6), int(bounds.VecY * .8))),
+sheep = Sheep(Vector(random.randrange(int(bounds.x * .4), int(bounds.x * .6)),
+					 random.randrange(int(bounds.y * .6), int(bounds.y * .8))),
 			 Constants.SHEEP_SPEED, Constants.SHEEP_ANGULAR_SPEED, Vector(Constants.DOG_WIDTH, Constants.DOG_HEIGHT), (0, 255, 0), Constants.MAXTIME, sheepImage)
 sheep_list.append(sheep)
 
@@ -106,9 +116,13 @@ while not done:
 			if event.key == pygame.K_8: Constants.enable_seper_force = not Constants.enable_seper_force; print("seper force " + str(Constants.enable_seper_force))
 			if event.key == pygame.K_9: Constants.enable_cohes_force = not Constants.enable_cohes_force; print("cohes force " + str(Constants.enable_cohes_force))
 			if event.key == pygame.K_0: Constants.enable_bound_force = not Constants.enable_bound_force; print("bound force " + str(Constants.enable_bound_force))
+			if event.key == pygame.K_a: Constants.enable_aStar = True; Constants.enable_breadth_first = False; Constants.enable_djikstra = False; Constants.enable_best = False
+			if event.key == pygame.K_s: Constants.enable_best =True; Constants.enable_breadth_first = False; Constants.enable_djikstra = False; Constants.enable_aStar = False
+			if event.key == pygame.K_d: Constants.enable_djikstra = True; Constants.enable_breadth_first = False; Constants.enable_aStar = False; Constants.enable_best = False
+			if event.key == pygame.K_f: Constants.enable_breadth_first = True; Constants.enable_aStar = False; Constants.enable_djikstra = False; Constants.enable_best = False
 		if event.type == pygame.QUIT:
 			done = True
-		
+
 	# Update agents
 	#cant inherit on player without these parameters???
 	dog.update(dog, Constants.ENEMY_RANGE)
@@ -116,16 +130,29 @@ while not done:
 	for x in range(len(sheep_list)):
 		sheep_list[x].update(dog, Constants.ENEMY_RANGE, sheep_list, Constants.GATES)
 	
+	#pathfinding less than every frame( ideally once every 1/6 of a second)
+	patienceCounter += 1
+	if(patienceCounter >= 20):
+		if(Constants.enable_aStar):
+			graph.findPath_AStar(dog.pos,sheep.pos)
+		elif(Constants.enable_breadth_first):
+			graph.findPath_Breadth(dog.pos, sheep.pos)
+		elif(Constants.enable_djikstra):
+			graph.findPath_Djikstra(dog.pos, sheep.pos)
+		elif(Constants.enable_best):
+			graph.findPath_BestFirst(dog.pos, sheep.pos)
+
+		patienceCounter = 0
+
 	# Fill Screen
 	screen.fill((Constants.BACKGROUND_COLOR))
 
-	#draw graph/obstacles
-	buildGates()
-	buildObstacles()
-	
+	# Redraw Graph
+	graph.draw(screen)
+
 	# Draw agents
 	dog.draw(screen)
-	
+
 	for x in range(len(sheep_list)):
 		sheep_list[x].draw(screen, sheep_list)
 
